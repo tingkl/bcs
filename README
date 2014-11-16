@@ -1,5 +1,5 @@
 上传文件到BCS相应的bucket：
-  情况一： 由于bcs.baidu.com不支持跨域，需要将相应页面放到bs.baidu.com下
+  情况一： 由于bcs.baidu.com不支持跨域，需要将相应页面放到bs.baidu.com下,例如 http://bcs.baidu.com/ad-show/flash_test.html
   情况二： 由于bcs.duapp.com支持跨域，响应头为
            Access-Control-Allow-Headers:Origin, Content-Type, Accept, Content-Length
            Access-Control-Allow-Methods:GET, PUT, POST, DELETE, OPTIONS, HEAD

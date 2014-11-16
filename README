@@ -1,0 +1,49 @@
+上传文件到BCS相应的bucket：
+  情况一： 由于bcs.baidu.com不支持跨域，需要将相应页面放到bs.baidu.com下
+  情况二： 由于bcs.duapp.com支持跨域，响应头为
+           Access-Control-Allow-Headers:Origin, Content-Type, Accept, Content-Length
+           Access-Control-Allow-Methods:GET, PUT, POST, DELETE, OPTIONS, HEAD
+           Access-Control-Allow-Origin:*
+           所以可以在任何页面上传文件
+        
+调用方法： 
+
+require.config({
+    baseUrl: 'http://bs.baidu.com/adtest/module/bcs'
+});
+require(['BCS'], function (BCS) {
+    BCS.setConfig({
+        "ak": "bdl5r1ZrXCtpu4XdEDrKi91B",
+        "sk": "zQo110IfyUMyOoAkYzLG9cWQ6GaWW2Ig",
+        "MBO": "MBO",
+        "Bucket": "lego-up",
+        "Method": "PUT",
+        "Host": "http://bcs.duapp.com/"
+    });
+    var bcs = new BCS($('#video')[0].files[0]);
+    bcs.addListener(BCS.evt.LOAD, function (evt) {
+        var per = 100 + "%";
+        bar.text(per).width(per);
+        var saveURL = evt.target.responseURL;
+        logic.enable();
+        logic.save(saveURL, blob.name);
+    }).addListener(BCS.evt.PROGRESS, function (evt) {
+        if (evt.lengthComputable) {
+            var per = evt.loaded / evt.total;
+            per = Number(per * 100).toFixed(2);
+            if (per === '100.00') {
+                per = 100;
+            }
+            if (per > 100) {
+                per = per - 100;
+            }
+            per = Number(per).toFixed(2) + "%";
+            bar.text(per).width(per);
+        }
+    }).addListener(BCS.evt.ERROR, function (evt) {
+        logic.modal('error:ajax error!');
+    }).addListener(BCS.evt.ABORT, function (evt) {
+        logic.modal('取消上传文件!', '有状况!');
+    });
+    bcs.upload();
+});

@@ -1,0 +1,180 @@
+@import "mixins.less";
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Microsoft Yahei';
+    position: relative;
+}
+
+.bcs-content {
+    margin: auto;
+    padding: 0 15px;
+    width: 80%;
+    .page-header {
+        border: 0;
+        margin: 0;
+        h1 {
+            padding-top: 20px;
+            margin: 0;
+        }
+    }
+    #history {
+
+        tr td {
+            line-height: 30px;
+            padding: 5px 5px;
+        }
+        img {
+            width: 27px;
+            height: 27px;
+            display: block;
+            margin: auto;
+        }
+        a {
+            outline: none;
+            img {
+                width: 35px;
+                height: 27px;
+
+            }
+        }
+
+    }
+}
+
+.bcs-uploader {
+    background-color: #fafafa;
+    border-color: #e5e5e5 #eee #eee;
+    border-style: solid;
+    border-width: 1px 0;
+    .box-shadow(0 3px 6px rgba(0, 0, 0, 0.05) inset);
+    margin: 0;
+    padding: 25px 15px 15px;
+    position: relative;
+    .bcs-area {
+        border: 3px dashed #e6e6e6;
+        margin: 20px;
+        .bcs-placeholder {
+            background: url("../images/video.png") no-repeat scroll center 93px rgba(0, 0, 0, 0);
+            color: #cccccc;
+            font-size: 18px;
+            min-height: 350px;
+            padding-top: 178px;
+            text-align: center;
+            .transition(all 3s);
+            .box-sizing(border-box);
+            p {
+                margin: 0;
+            }
+            .bcs-container {
+                position: relative;
+                .bcs-pick {
+                    font-size: 18px;
+                    line-height: 44px;
+                    margin: 0 auto 18px;
+                    padding: 0 30px;
+                }
+
+                #video {
+                    display: none;
+                }
+            }
+        }
+        .bcs-video {
+            display: none;
+            position: relative;
+            &:hover {
+                .glyphicon {
+                    .opacity(100);
+                }
+            }
+            .bcs-view {
+                display: inline-block;
+                img {
+                    float: left;
+                    width: 138px;
+                    height: 138px;
+                }
+                .bcs-info {
+                    margin: 5px 10px 0 20px;
+                    float: left;
+                    padding: 0;
+                    list-style-type: none;
+                    font-size: 16px;
+                    li {
+                        line-height: 20px;
+                        padding: 10px 15px;
+                        label {
+                            width: 150px;
+                        }
+                        em {
+                            font-style: normal;
+                        }
+                    }
+                }
+            }
+            .glyphicon {
+                cursor: pointer;
+                font-size: 23px;
+                color: #d44950;
+                .opacity(0);
+                vertical-align: top;
+            }
+            .bcs-status {
+                margin-top: 10px;
+                border-top: 1px solid #dadada;
+                height: 63px;
+                line-height: 63px;
+                vertical-align: middle;
+                position: relative;
+                .progress {
+                    width: 570px;
+                    margin-top: 20px;
+                    display: none;
+                }
+
+                .bcs-btn-area {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    button {
+                        margin-left: 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    .bcs-area-drop {
+        border-color: #999999;
+    }
+    .bcs-filled {
+        border-color: transparent;
+    }
+}
+
+.bcs-line {
+    padding-top: 15px;
+    margin-top: 0;
+    text-align: center;
+}
+.bcs-center {
+    text-align: center;
+    a {
+        display: block;
+        outline: none;
+    }
+}
+.bcs-modal {
+    .modal-title {
+        background: url(../images/sad.png) no-repeat 0 -5px;
+        text-indent: 35px;
+    }
+    .modal-body {
+        color: #d44950;
+    }
+}
+
+
+

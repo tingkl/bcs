@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>BCS上传</title>
+    <link rel="SHORTCUT ICON" href="http://www.baidu.com/favicon.ico"/>
+    <link rel="stylesheet" href="css/bcs.css"/>
+    <!--<link rel="stylesheet/less" type="text/css" href="css/bcs.less">
+    <script src="js/less.js" type="text/javascript"></script>-->
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"/>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/2.1.0-rc1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/require.js/2.1.10/require.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>
+        require.config({
+            baseUrl: 'http://bs.baidu.com/adtest/module/bcs'
+        });
+        require(['BCS'], function (BCS) {
+            BCS.setConfig({
+                "ak": "z2Ll0Ed6ibK4CFlFGHlGHglX",
+                "sk": "BcjAjFzbRbaV6W4XgxamZfsgHznob",
+                "MBO": "MBO",
+                "Bucket": "public01",
+                "Method": "PUT",
+                "Host": "http://bs.baidu.com/"
+            });
+            var unit = ['bit', 'kb', 'M', 'G'];
+            var bcs;
+            var logic = {
+                enable: function () {
+                    $('#submit').attr('disabled', false);
+                },
+                disable: function () {
+                    $('#submit').attr('disabled', true);
+                },
+                modal: function (msg, title) {
+                    title = title || "出错啦!"
+                    var dialog = $('.bcs-modal');
+                    dialog.find('.modal-body').html(msg);
+                    dialog.find('.modal-title').html(title);
+                    dialog.modal('show');
+                },
+                switchTab: function (file) {
+                    logic.enable();
+                    if (bcs) {
+                        bcs.abort();
+                        logic.enable();
+                    }
+                    var pro = $('.bcs-status .progress').hide();
+                    pro.find('.progress-bar').text('0%').width('0%');
+                    var area = $('.bcs-area').addClass('bcs-filled');
+                    area.find('.bcs-placeholder').hide();
+                    area.find('.bcs-video').show();
+                    var infos = $('.bcs-info').find('em');
+                    var type = file.type;
+                    if (type === '') {
+                        type = 'unknow';
+                    }
+                    $(infos[0]).html(file.name);
+                    $(infos[1]).html(type);
+                    var size = file.size;
+                    var count = 0;
+                    while (size > 1024) {
+                        if (count === 3) {
+                            break;
+                        }
+                        size = size / 1024;
+                        count++;
+                    }
+                    $(infos[2]).html(size.toFixed(2) + unit[count]);
+                },
+                abort: function () {
+                    var area = $('.bcs-area').removeClass('bcs-filled');
+                    area.find('.bcs-placeholder').show();
+                    area.find('.bcs-video').hide();
+                    if (bcs) {
+                        bcs.abort();
+                        logic.enable();
+                    }
+                },
+                upload: function (blob) {
+                    logic.disable();
+                    delete bcs;
+                    bcs = null;
+                    var pro = $('.bcs-status .progress').show();
+                    var bar = pro.find('.progress-bar');
+                    bar.text('0%').width('0%');
+                    pro.show();
+                    bcs = new BCS(blob);
+                    bcs.addListener(BCS.evt.LOAD, function (evt) {
+                        var per = 100 + "%";
+                        bar.text(per).width(per);
+                        var saveURL = evt.target.responseURL;
+                        $('#address').attr('href', saveURL).text(saveURL);
+                        logic.enable();
+                    }).addListener(BCS.evt.PROGRESS, function (evt) {
+                        if (evt.lengthComputable) {
+                            var per = evt.loaded / evt.total;
+                            per = Number(per * 100).toFixed(2);
+                            if (per === '100.00') {
+                                per = 100;
+                            }
+                            if (per > 100) {
+                                per = per - 100;
+                            }
+                            per = Number(per).toFixed(2) + "%";
+                            bar.text(per).width(per);
+                        }
+                    }).addListener(BCS.evt.ERROR, function (evt) {
+                        logic.modal('error:ajax error!');
+                    }).addListener(BCS.evt.abort, function (evt) {
+                        logic.modal('取消上传文件!', '有状况!');
+                    });
+                    bcs.upload();
+                }
+            };
+            var currentFile;
+            $('#video').change(function () {
+                currentFile = $('#video')[0].files[0];
+                logic.switchTab(currentFile);
+            });
+            $('#submit').click(function () {
+                logic.upload(currentFile);
+            });
+            $('.bcs-tip').tooltip();
+            /*阻止chrome拖拽打开新标签*/
+            $('body').on('dragenter', function (e) {
+                e.originalEvent.dataTransfer.effectAllowed = 'none';
+                e.preventDefault();
+                return false;
+            }).on('dragover', function (e) {
+                e.originalEvent.dataTransfer.effectAllowed = 'none';
+                e.preventDefault();
+                return false;
+            }).on('drop', function (e) {
+                e.originalEvent.dataTransfer.effectAllowed = 'none';
+                e.preventDefault();
+                return false;
+            });
+            $('.bcs-placeholder').on('dragenter', function (e) {
+                e.originalEvent.dataTransfer.effectAllowed = 'copy';
+                $('.bcs-area').addClass('bcs-area-drop');
+                e.preventDefault();
+                return false;
+            }).on('dragover', function (e) {
+                $('.bcs-area').addClass('bcs-area-drop');
+                e.preventDefault();
+                return false;
+            }).on('dragleave', function (e) {
+                $('.bcs-area').removeClass('bcs-area-drop');
+                e.preventDefault();
+                return false;
+            }).on('drop', function (e) {
+                $('.bcs-area').removeClass('bcs-area-drop');
+                currentFile = e.originalEvent.dataTransfer.files[0];
+                logic.switchTab(currentFile);
+                e.preventDefault();
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="bcs-content">
+    <div class="bcs-uploader">
+        <div class="bcs-area">
+            <div class="bcs-placeholder">
+                <div class="bcs-container">
+                    <button type="button" class="bcs-pick btn btn-info btn-lg bcs-tip" onclick="$('#video').click();"
+                            data-toggle="tooltip" data-placement="right" title="点击选择视频文件">点击选择视频
+                    </button>
+                    <input id="video" type="file"/>
+                </div>
+                <p class="bcs-tip" data-toggle="tooltip" data-placement="bottom" title="拖拽视频文件到该区域">或将视频拖到这里</p>
+            </div>
+            <div class="bcs-video">
+                <span class="bcs-view">
+                    <img src="images/present.png">
+                    <ul class="bcs-info">
+                        <li><label>文件名：</label><em></em></li>
+                        <li><label>MIME类型：</label><em></em></li>
+                        <li><label>大小：</label><em></em></li>
+                    </ul>
+                </span>
+                <!--<span id="abort" class="glyphicon glyphicon-remove bcs-tip" data-toggle="tooltip"
+                      data-placement="right" title="取消当前文件"></span>
+                <script>
+                    $('#abort').click(logic.abort);
+                </script>-->
+                <div class="bcs-status">
+                    <div class="progress bcs-tip" data-toggle="tooltip"
+                         data-placement="right" title="大文件一开始会长时间没反应-_-!">
+                        <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar"
+                             class="progress-bar progress-bar-info progress-bar-striped active"></div>
+                    </div>
+                    <div class="bcs-btn-area">
+                        <button type="button" onclick="$('#video').click();" class="btn btn-default bcs-tip"
+                                data-toggle="tooltip" data-placement="bottom" title="重新选择视频文件">重新选取
+                        </button>
+                        <button type="button" id="submit" class="btn btn-info bcs-tip" data-toggle="tooltip"
+                                data-placement="bottom" title="上传视频至BOS">开始上传
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <a target="_blank" href="" id="address"></a>
+        </div>
+    </div>
+</div>
+<div class="modal bcs-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title">出错啦!</h4>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

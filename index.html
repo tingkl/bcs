@@ -3,6 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>BCS上传</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <link rel="SHORTCUT ICON" href="http://www.baidu.com/favicon.ico"/>
     <link rel="stylesheet" href="css/bcs.css"/>
     <!--<link rel="stylesheet/less" type="text/css" href="css/bcs.less">
@@ -96,6 +97,7 @@
                         var per = 100 + "%";
                         bar.text(per).width(per);
                         var saveURL = evt.target.responseURL;
+                        saveURL = saveURL || bcs.getURL();
                         $('#address').attr('href', saveURL).text(saveURL);
                         logic.enable();
                     }).addListener(BCS.evt.PROGRESS, function (evt) {
@@ -172,11 +174,11 @@
             <div class="bcs-placeholder">
                 <div class="bcs-container">
                     <button type="button" class="bcs-pick btn btn-info btn-lg bcs-tip" onclick="$('#video').click();"
-                            data-toggle="tooltip" data-placement="right" title="点击选择视频文件">点击选择视频
+                            data-toggle="tooltip" data-placement="right" title="点击选择文件">点击选择
                     </button>
                     <input id="video" type="file"/>
                 </div>
-                <p class="bcs-tip" data-toggle="tooltip" data-placement="bottom" title="拖拽视频文件到该区域">或将视频拖到这里</p>
+                <p class="bcs-tip" data-toggle="tooltip" data-placement="bottom" title="拖拽文件到该区域">或将文件拖到这里</p>
             </div>
             <div class="bcs-video">
                 <span class="bcs-view">
@@ -200,10 +202,10 @@
                     </div>
                     <div class="bcs-btn-area">
                         <button type="button" onclick="$('#video').click();" class="btn btn-default bcs-tip"
-                                data-toggle="tooltip" data-placement="bottom" title="重新选择视频文件">重新选取
+                                data-toggle="tooltip" data-placement="bottom" title="重新选择文件">重新选取
                         </button>
                         <button type="button" id="submit" class="btn btn-info bcs-tip" data-toggle="tooltip"
-                                data-placement="bottom" title="上传视频至BOS">开始上传
+                                data-placement="bottom" title="上传至BCS">开始上传
                         </button>
                     </div>
                 </div>
